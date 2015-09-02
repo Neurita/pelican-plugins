@@ -19,12 +19,17 @@ def article_title(content):
     sub_title = ''
     if hasattr(content, 'subtitle'):
         sub_title = ' ' + BeautifulSoup(content.subtitle, 'html.parser').get_text().strip()
-    return quote(('%s%s' % (main_title, sub_title)).encode('utf-8'))
+    return quote('{}{}'.format(main_title, sub_title))
 
 
 def article_url(content):
     site_url = content.settings['SITEURL']
-    return quote(('%s/%s' % (site_url, content.url)).encode('utf-8'))
+    return quote('{}/{}'.format(site_url, content.url))
+
+
+def article_summary(content):
+    summary = BeautifulSoup(content.summary, 'html.parser').get_text().strip()
+    return quote(summary)
 
 
 def share_post(content):
@@ -32,6 +37,7 @@ def share_post(content):
         return
     title = article_title(content)
     url = article_url(content)
+    summary = article_summary(content)
 
     tweet = ('%s%s%s' % (title, quote(' '), url)).encode('utf-8')
     diaspora_link = 'https://sharetodiaspora.github.io/?title=%s&url=%s' % (title, url)
@@ -49,7 +55,7 @@ def share_post(content):
                    'twitter': twitter_link,
                    'facebook': facebook_link,
                    'google-plus': gplus_link,
-                    'linkedin': linkedin_link,
+                   'linkedin': linkedin_link,
                    'email': mail_link
                    }
     content.share_post = share_links
@@ -57,5 +63,3 @@ def share_post(content):
 
 def register():
     signals.content_object_init.connect(share_post)
-
-
