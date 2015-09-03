@@ -11,15 +11,15 @@ from os import path
 from bs4 import BeautifulSoup
 from pelican import signals, readers, contents
 
-try:
-    from pandoc_reader import PandocReader
-except ImportError:
-    PandocReader = False
-
 
 def extract_toc(content):
     if isinstance(content, contents.Static):
         return
+
+    try:
+        from pandoc_reader import PandocReader
+    except ImportError:
+        PandocReader = False
 
     soup = BeautifulSoup(content._content,'html.parser')
     filename = content.source_path
